@@ -28,6 +28,8 @@ jobs:
           git checkout ${{ github.sha }}
       - name: Run docker compose
         run: |
+          docker login --username ${{ secrets.DOCKER_HUB_LOGIN }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
+          docker login ghcr.io --username ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
           export POSTGRES_DB="${{ secrets.DEV_POSTGRES_DB }}"
           export POSTGRES_PASSWORD="${{ secrets.DEV_POSTGRES_PASSWORD }}"
           export DOMAIN_NAME="${{ secrets.DEV_DOMAIN_NAME }}"
