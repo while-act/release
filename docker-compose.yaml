@@ -7,9 +7,8 @@ services:
     image: postgres:15-alpine3.17
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      - POSTGRES_DB
+      - POSTGRES_PASSWORD
     ports:
       - "5432:5432"
     healthcheck:
@@ -42,8 +41,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-        HOST: ${DOMAIN_NAME}
-        EMAIL_USER: ${EMAIL_USER}
-        EMAIL_PASSWORD: ${EMAIL_PASSWORD}
-        EMAIL_STMP_HOST: ${EMAIL_STMP_HOST}
-        EMAIL_PORT: ${EMAIL_PORT}
+        - EMAIL_USER
+        - EMAIL_PASSWORD
+        - EMAIL_STMP_HOST
+        - EMAIL_PORT
