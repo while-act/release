@@ -40,6 +40,7 @@ jobs:
           password: ${{ secrets.PAT }}
       - name: Run docker compose
         run: |
+          export POSTGRES_USER="${{ secrets.DEV_POSTGRES_USER }}"
           export POSTGRES_DB="${{ secrets.DEV_POSTGRES_DB }}"
           export POSTGRES_PASSWORD="${{ secrets.DEV_POSTGRES_PASSWORD }}"
           export DOMAIN_NAME="${{ secrets.DEV_DOMAIN_NAME }}"
