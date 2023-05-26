@@ -1,0 +1,42 @@
+name: Deploy Dev
+
+on:
+  push:
+    branches: main
+    paths:
+      - "docker-compose.yaml"
+      - ".github/workflows/dev-deploy.yaml"
+  repository_dispatch:
+    types:
+      - deploy-dev
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, dev]
+    defaults:
+      run:
+        working-directory: /root/releases
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Update repository
+        run: |
+          git reset --hard HEAD
+          git clean -f
+          git fetch -p
+          git checkout ${{ github.sha }}
+      - name: Run docker compose
+        run: |
+          export POSTGRES_DB="${{ secrets.DEV_POSTGRES_DB }}"
+          export POSTGRES_PASSWORD="${{ secrets.DEV_POSTGRES_PASSWORD }}"
+          export DOMAIN_NAME="${{ secrets.DEV_DOMAIN_NAME }}"
+          export EMAIL_USER="${{ secrets.DEV_EMAIL_USER }}"
+          export EMAIL_PASSWORD="${{ secrets.DEV_EMAIL_PASSWORD }}"
+          export EMAIL_STMP_HOST="${{ secrets.DEV_EMAIL_SMTP_HOST }}"
+          export EMAIL_PORT="${{ secrets.DEV_EMAIL_PORT }}"
+          docker compose -f docker-compose.yaml pull --quiet
+          docker compose -f docker-compose.yaml build
+          docker compose -f docker-compose.yaml up -d --remove-orphans
+      - name: Clean docker containers and volumes
+        run: docker system prune -a --volumes -f

@@ -1,0 +1,5 @@
+.idea
+.env
+tls/youtogether-local-cert.pem
+tls/youtogether-local-key.pem
+tls/acme.json
