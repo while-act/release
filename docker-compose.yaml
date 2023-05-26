@@ -45,3 +45,4 @@ services:
         - EMAIL_PASSWORD
         - EMAIL_STMP_HOST
         - EMAIL_PORT
+        - COOKIE_PATH
