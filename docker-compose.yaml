@@ -31,7 +31,7 @@ services:
 
   backend:
     container_name: backend
-    image: ghcr.io/youtogether-online/backend:latest
+    image: ghcr.io/while-act/hackathon-backend:latest
     restart: unless-stopped
     depends_on:
         redis:
