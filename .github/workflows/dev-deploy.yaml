@@ -47,6 +47,7 @@ jobs:
           export EMAIL_STMP_HOST=${{ secrets.DEV_EMAIL_SMTP_HOST }}
           export EMAIL_PORT=${{ secrets.DEV_EMAIL_PORT }}
           export COOKIE_PATH=${{ secrets.DEV_COOKIE_PATH }}
+          export DEFAULT_SERVER =${{ secrets.DEV_DEFAULT_SERVER }}
           docker compose -f docker-compose.yaml pull --quiet
           docker compose -f docker-compose.yaml build
           docker compose -f docker-compose.yaml up -d --remove-orphans
