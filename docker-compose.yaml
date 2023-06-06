@@ -1,6 +1,37 @@
 version: '3.9'
+name: hackathon
+
+networks:
+  proxy:
 
 services:
+  traefik:
+    container_name: proxy
+    hostname: traefik
+    image: traefik:v2.10
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.traefik.entrypoints: "websecure"
+      traefik.http.routers.traefik.rule: "Host(`traefik.${DOMAIN_NAME}`)"
+      traefik.http.routers.traefik.tls: "true"
+      traefik.http.routers.traefik.service: "api@internal"
+    restart: on-failure:5
+    expose:
+      - "8080"
+    ports:
+      - target: 80
+        published: 80
+        mode: host
+      - target: 443
+        published: 443
+        mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./services/traefik/config.yaml:/etc/traefik/config.yaml:ro
+      - ./services/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro
+      - ./tls:/tls
+    networks:
+      - proxy
 
   postgres:
     container_name: postgres
@@ -9,9 +40,12 @@ services:
     environment:
       - POSTGRES_DB
       - POSTGRES_PASSWORD
-      - DEFAULT_SERVER
     ports:
       - "5432:5432"
+    labels:
+      traefik.enable: "false"
+    networks:
+      - proxy
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -24,6 +58,10 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
+    labels:
+      traefik.enable: "false"
+    networks:
+      - proxy
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 8s
@@ -33,14 +71,22 @@ services:
   backend:
     container_name: backend
     image: ghcr.io/while-act/hackathon-backend:latest
-    restart: unless-stopped
+    restart: on-failure:5
     depends_on:
         redis:
           condition: service_healthy
         postgres:
           condition: service_healthy
-    ports:
-      - "3000:3000"
+    expose:
+      - 3000
+    networks:
+      - proxy
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.backend.rule: "Host(`${DOMAIN_NAME}`) && PathPrefix(`/api`)"
+      traefik.http.services.backend.loadbalancer.server.port: "3000"
+      traefik.http.routers.backend.tls: "true"
+      traefik.http.routers.backend.entrypoints: "websecure"
     environment:
         - EMAIL_USER
         - EMAIL_PASSWORD
