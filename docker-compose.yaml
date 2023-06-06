@@ -95,3 +95,4 @@ services:
         - EMAIL_STMP_HOST
         - EMAIL_PORT
         - COOKIE_PATH
+        - DOMAIN_NAME
