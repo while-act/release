@@ -49,8 +49,6 @@ jobs:
           export COOKIE_PATH=${{ secrets.DEV_COOKIE_PATH }}
           export DOMAIN_NAME=${{ secrets.DEV_DOMAIN_NAME }}
           export DEFAULT_SERVER=${{ secrets.DEV_DEFAULT_SERVER }}
-          export PGADMIN_DEFAULT_EMAIL=${{ secrets.DEV_PGADMIN_DEFAULT_EMAIL }}
-          export PGADMIN_DEFAULT_PASSWORD=${{ secrets.DEV_PGADMIN_DEFAULT_PASSWORD }}
           docker compose -f docker-compose.yaml pull --quiet
           docker compose -f docker-compose.yaml build
           docker compose -f docker-compose.yaml up -d --remove-orphans
